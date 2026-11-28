@@ -205,3 +205,17 @@ def test_treaty_heading_printed_in_a_lampiran_is_text():
     to_akn(law("Cukup jelas.", "\\PART I. GENERAL"), "/akn/id/act/uu/2009/15", "act")
     with pytest.raises(LeakedMarkupError):
         to_akn(law("\\ART 2 - leaked", "Teks."), "/akn/id/act/uu/2009/15", "act")
+
+
+def test_para_before_a_word_in_capitals_is_text():
+    """"PARA" marks a plural in Indonesian; markup's PARA comes before its number (2026-11-28:
+    UU 2/2023 kept its old text over "PARA PEJABAT BERWENANG")."""
+    import pytest
+
+    from hukum_rapih.akn.build import LeakedMarkupError, to_akn
+
+    doc = parse_lines(["Pasal 1", "PARA PEJABAT BERWENANG", "Pasal 2", "Teks."])
+    to_akn(to_bluebell(doc), "/akn/id/act/uu/2023/2", "act")
+    for leaked in ("\\PARA (1) Teks.", "\\PARA Ayat (1)"):
+        with pytest.raises(LeakedMarkupError):
+            to_akn(f"BODY\n  ART 1 -\n    {leaked}\n", "/akn/id/act/uu/2023/2", "act")

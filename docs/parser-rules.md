@@ -17,9 +17,9 @@ of citations in the text (see [Citations](#citations)).
 |---|---:|---:|---:|
 | Page cleanup (`pdf/extract.py`, `pdf/edges.py`) | 26 | 2 | 2 |
 | Line classification (`pdf/lines.py`) | 24 | 8 | 8 |
-| Structure (`pdf/structure.py` `TABLE`) | 33 | 7 | 6 |
+| Structure (`pdf/structure.py` `TABLE`) | 34 | 7 | 6 |
 | Closing fields (`closing.py`) | 12 | 2 | 2 |
-| **All** | **95** | **19** | **18** |
+| **All** | **96** | **19** | **18** |
 
 S17's test pins what it does today, which is a defect ([Known gaps](#known-gaps), G4). Three
 more tests are `xfail(strict=True)`: they state what the rewrite must do and fail until it does.
@@ -55,7 +55,7 @@ PDF pages to cleaned printed lines, before anything is classified.
 | P23 | A page-turn word anywhere when a line within 3 starts with its words | UU 19/2001, 12/1964, 1/2009 | `extract.clean_lines`, `_announces` | `test_page_furniture::test_page_turn_words_in_the_middle_of_a_pdf_page`, `test_page_turn_word_just_after_its_heading` |
 | P24 | A page-turn printed at the end of a text line is cut | UU 1/2009 | `extract._cut_page_turn_tail` | `test_page_furniture::test_page_turn_on_the_same_line_as_text` |
 | P25 | Misread words of scanned pages corrected when the spell check is confident, after cleanup | decision 0013 (v15) | `extract.clean_lines`, `ocr_fix.fix_lines` | `test_ocr_fix.py` |
-| P26 | Further PDFs of the same law (a separate Penjelasan) read after it | UU 19/2003 (v9) | `structure.parse_pdf(extra)` | `test_penjelasan::test_separate_penjelasan_pdf_is_read_after_the_law` |
+| P26 | Further PDFs of the same law (a separate Penjelasan, a treaty, decision 0023) read after it, each cleaned on its own; where each starts goes on to the structure (S34) | UU 19/2003 (v9), UU 13/2014 (v20) | `structure.parse_pdf(extra)`, `structure.parse_files` | `test_penjelasan::test_separate_penjelasan_pdf_is_read_after_the_law`, `test_joined_files.py` |
 
 ## Line classification
 
@@ -101,7 +101,8 @@ closing, certification, the Penjelasan's Umum, Pasal demi Pasal and an amending 
 Lampiran). `Context` holds the counters, the open lists, the document so far and `part`, the
 part that CLOSING and SALINAN lie over and give way to (`settle`). `TABLE` gives each state its
 cells in the order they are tried: a cell is a line class, a guard (counters, and a read-only
-`View` of the lines around for the look-ahead rules), an action and the next state.
+`View` of the lines around for the look-ahead rules and of where each joined file starts), an
+action and the next state.
 
 Code names the cells (`Cell.name`) that carry out the rule, then the guards and helpers they
 use; a cell may sit in several states. `test_structure_table::test_a_state_reads_its_lines`
@@ -122,7 +123,7 @@ column against the cells' ids.
 | S9 | Numbers inside a lettered item (and letters inside a numbered one) nest one deeper; lists reset per pasal | | b14f553f | `list_item`; `place` | `test_structure::test_numbers_inside_letters_and_back`, `test_list_nesting_resets_per_pasal` |
 | S10 | A list starts only at `a.` or `1.`; a lone `c.` is a reference wrapped onto the line | yes | v1 | `list_item`; `place` | **new** `test_structure::test_a_list_starts_only_at_a_or_1` |
 | S11 | Lines joined with a space; `Undang-` + `Undang` without | | v1 | `title_continues`, `preamble_text`, `text`; `append`, `join` | `test_structure::test_hyphen_join_and_nesting` |
-| S12 | Spacing tidied: `Undang- Undang`, space before `,;:.)`, after `(`, inside quotes | | justified layout | `tidy` (in `parse_lines`, after the table) | **new** `test_structure::test_spacing_of_joined_lines_is_tidied` |
+| S12 | Spacing tidied: `Undang- Undang`, space before `,;:.)`, after `(`, inside quotes | | justified layout | `tidy` (in `parse_files`, after the table) | **new** `test_structure::test_spacing_of_joined_lines_is_tidied` |
 | S13 | Before the first label every line is title, joined | | v1 | `opening`, `crest_caption`, `title`, `title_continues` | `test_headings::test_crest_caption_is_not_the_title` |
 | S14 | Preamble lists: the first item on the label's line or after a lone `:`; flat | | UU 14/2013, 6/1964 (v5) | `preamble_label`, `label_alone`, `preamble_item` | `test_headings::test_preamble_lists_on_the_label_line_and_after_a_colon` |
 | S15 | `Dengan persetujuan …` is its own preamble part, not glued to the last Mengingat item | | v5 | `preamble_label` | `test_headings::test_preamble_lists_on_the_label_line_and_after_a_colon` |
@@ -144,6 +145,7 @@ column against the cells' ids.
 | S31 | A document is amending when its first pasal has a Roman number | | v7 | `Document.amending` (outside the table) | `test_amending_laws::test_amending_law_is_recognised_from_its_first_pasal` |
 | S32 | Before the Penjelasan's first pasal a part line (`I. UMUM`, `II. PASAL DEMI PASAL`) opens its part; the numeral alone on its line is dropped | | UU 6/1967, 2/2025 (v8) | `part_numeral`, `part` | `test_penjelasan::test_penjelasan_sections_with_the_numeral_on_its_own_line`, `test_penjelasan_with_lettered_sections` |
 | S33 | `Ayat (1)`, `Huruf a`, `Angka 2` are labels only under a Penjelasan pasal | | Lampiran II item 190 | `p_label` | `test_penjelasan::test_penjelasan_labels_for_ayat_huruf_and_angka` |
+| S34 | A joined file (decision 0023) with no Penjelasan or Lampiran heading in its first lines starts a Lampiran once the law's own text has ended (its closing read, or its Penjelasan open); in the body or a Lampiran it goes on with what is open (a body or a Lampiran in parts). A copy certification ends with its file | | 2026-11-28: UU 13/2014 and 17 other ratification laws had the treaty, a file of its own, as Penjelasan or closing text (v20) | `file_opens_lampiran`, `salinan_ends_at_file`; `file_opens_no_part`, `file_starts`, `FILE_HEAD_LINES` | `test_joined_files.py` |
 
 ## How to add or change a rule
 
