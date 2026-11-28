@@ -75,9 +75,12 @@ def _check_no_leaked_markup(xml, lampiran: tuple[str, ...] = ()) -> None:
 
     # markup shows as a keyword then a space or the end ("ART 1 -", "POINT (a)", "BODY"); a
     # keyword-like word in the law's own text is not ("TR: Tegangan Rendah", UU 59/2024).
-    # A Lampiran keeps its printed lines (rule S23), so a treaty's own "ARTICLE 9" or "PART I"
-    # there is text (2026-11-28: UU 15/2009 kept its old text over it)
-    leaked = re.compile(rf"^(?:{'|'.join(sorted(KEYWORDS, key=len, reverse=True))})(?:\s|$)")
+    # "PARA" before a word in capitals is the Indonesian plural, while markup's PARA comes
+    # before its number ("PARA (1)", "PARA Ayat (1)") (2026-11-28: UU 2/2023, "PARA PEJABAT
+    # BERWENANG"). A Lampiran keeps its printed lines (rule S23), so a treaty's own "ARTICLE 9"
+    # or "PART I" there is text (2026-11-28: UU 15/2009 kept its old text over it)
+    keywords = "|".join(sorted(KEYWORDS, key=len, reverse=True))
+    leaked = re.compile(rf"^(?!PARA [A-Z]{{2,}}\b)(?:{keywords})(?:\s|$)")
     for p in xml.iter("{*}p"):
         text = "".join(p.itertext()).strip()
         if leaked.match(text) and not (p.get("eId") or "").startswith(lampiran):
