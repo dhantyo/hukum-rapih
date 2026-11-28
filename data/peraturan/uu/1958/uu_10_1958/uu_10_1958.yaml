@@ -62,4 +62,4 @@ bpk:
     reason: the law with its Penjelasan, then the agreement Lampiran
 uji_materi: null
 recheck: file order set (decision 0023)
-reparse_error: 'v19: new text has 2 pasal, stored text 4'
+reparse_error: 'v20: new text has 2 pasal, stored text 4'

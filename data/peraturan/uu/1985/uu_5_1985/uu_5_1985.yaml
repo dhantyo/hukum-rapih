@@ -54,5 +54,5 @@ bpk:
       note: null
   tanggal_pengundangan: '1985-03-18'
 uji_materi: null
-reparse_error: 'v19: new text has 26 pasal, stored text 32'
+reparse_error: 'v20: new text has 26 pasal, stored text 32'
 recheck: 'watermark 10; closing: no date of signing'

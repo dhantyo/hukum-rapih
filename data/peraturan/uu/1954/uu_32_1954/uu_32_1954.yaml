@@ -32,13 +32,15 @@ versions:
   date_basis: tanggal_penetapan
   text: uu_32_1954_1954-10-26.txt
   pasal_count: 4
-  parser_version: 18
+  parser_version: 20
   pdf_source: peraturan.bpk.go.id
   pdf_sha256: 29efd9740fec9bf7c744b194abd78dd6d0f3d3ba6957895c39d5a96e11d2bda3
+  extra_pdf_sha256:
+  - 22b444ce0ae2fe862cf063adabbea244b1fe203fe04a4de9d1ff3df44d5c80ba
   checks:
     version: 2
     failed: []
-    word_coverage: 0.9984
+    word_coverage: 0.9991
 pdf_sha256: 5d2047ef235574765fef97c7ed16c34103fd122f0c6a6640274855f73d050d97
 tanggal_pengundangan: '1954-11-02'
 tanggal_berlaku: '1954-11-02'
@@ -76,5 +78,3 @@ bpk:
     skip: []
     reason: law first, then the attached Undang-Undang 22/1946
 uji_materi: null
-recheck: file order set (decision 0023)
-reparse_error: 'v19: check missed_heading worse'

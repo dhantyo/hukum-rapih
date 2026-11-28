@@ -49,5 +49,5 @@ bpk:
     archive_url: null
   status_peraturan: null
 uji_materi: null
-reparse_error: 'v19: new text has 4 pasal, stored text 5'
+reparse_error: 'v20: new text has 4 pasal, stored text 5'
 recheck: 'watermark 3; closing: no date of signing'

@@ -53,5 +53,5 @@ bpk:
       url: https://peraturan.bpk.go.id/Details/46016/uu-no-22-tahun-1997
       note: null
 uji_materi: null
-reparse_error: 'v19: new text has 51 pasal, stored text 55'
+reparse_error: 'v20: new text has 51 pasal, stored text 55'
 recheck: 'missed heading in penjelasan 28; watermark 19; closing: no date of signing'

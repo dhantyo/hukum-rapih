@@ -50,5 +50,5 @@ bpk:
     archive_url: null
   status_peraturan: null
 uji_materi: null
-reparse_error: 'v19: new text has 656 words, stored text 2591'
+reparse_error: 'v20: new text has 656 words, stored text 2591'
 recheck: 'missed heading in penjelasan 10; watermark 2; closing: no date of signing'
