@@ -31,13 +31,20 @@ versions:
   date_basis: tanggal_penetapan
   text: uu_13_2014_2014-07-21.txt
   pasal_count: 2
-  parser_version: 18
+  parser_version: 20
   pdf_source: peraturan.bpk.go.id
   pdf_sha256: 153a5fde0d5760667ae7ad656a6582c5c7c1dfebba637a3d981e4113a3f92e54
+  extra_pdf_sha256:
+  - 745c11d947b94cae763016d02f67bb630a3d7b2835737fa66d86e44f4ed90bff
+  ocr: true
+  ocr_engine: indra
+  ocr_fixed: 3
+  ocr_unknown: 77
   checks:
-    version: 1
+    version: 2
     failed: []
     word_coverage: 1.0
+    ocr_unknown_rate: 0.0056
 pdf_sha256: d2d524381c580f6157e19ce704b463fe20e97ad15a271857920661b5b573ae85
 tanggal_pengundangan: '2014-07-21'
 tanggal_berlaku: '2014-07-21'
@@ -69,5 +76,3 @@ bpk:
     skip: []
     reason: the law with its Penjelasan, then the treaty text as Lampiran
 uji_materi: null
-recheck: file order set (decision 0023)
-reparse_error: 'v19: LeakedMarkupError: att_1__p_368: markup in text: ''ARTICLE 1'''

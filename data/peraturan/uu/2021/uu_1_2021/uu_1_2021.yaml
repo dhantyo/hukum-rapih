@@ -32,18 +32,23 @@ versions:
   date_basis: tanggal_penetapan
   text: uu_1_2021_2021-05-07.txt
   pasal_count: 2
-  parser_version: 18
+  parser_version: 20
   pdf_source: peraturan.bpk.go.id
   pdf_sha256: 7d86744d77174ee508a2632795cf8a1bda0bea64241d31906a7a0a5e453faf45
+  extra_pdf_sha256:
+  - c7c94f9aba17a0098ecf869263a92c4d11381e50de9aceb56987bfa0963b8a48
+  - d540e51293c27046e42717900c13c6a78dfd38437f3bc98674505d49e7ed8571
+  - 6fda396f64a1a29a32fe4a556ff607416247a7d37e54ad0afe315a5b8293d7d3
+  - dc44cd5ccac36b5848b81434031d4101d13ce04dc0521091d2d09ba91c575bbe
   ocr: true
   ocr_engine: indra
   ocr_fixed: 0
-  ocr_unknown: 11
+  ocr_unknown: 36
   checks:
-    version: 1
+    version: 2
     failed: []
-    word_coverage: 0.9831
-    ocr_unknown_rate: 0.0098
+    word_coverage: 0.9999
+    ocr_unknown_rate: 0.0
 pdf_sha256: 864c06d70e8e222da972cce6e864df88c2086ec44fd65d091e29dc1f914668b3
 tanggal_pengundangan: '2021-05-07'
 tanggal_berlaku: '2021-05-07'
@@ -98,5 +103,3 @@ bpk:
     reason: the law, then the agreement text (Indonesian translation, then official
       English), then the annexes (Indonesian, then English)
 uji_materi: null
-recheck: file order set (decision 0023)
-reparse_error: 'v19: LeakedMarkupError: att_1__p_264: markup in text: ''CHAPTER 1'''

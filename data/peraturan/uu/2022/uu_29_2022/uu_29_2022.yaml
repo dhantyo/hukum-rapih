@@ -74,4 +74,4 @@ bpk:
     reason: law first, then Lampiran I-II
 uji_materi: null
 recheck: file order set (decision 0023)
-reparse_error: 'v19: check ocr_unknown worse'
+reparse_error: 'v20: check ocr_unknown worse'

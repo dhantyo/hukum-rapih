@@ -58,5 +58,5 @@ bpk:
       url: https://peraturan.bpk.go.id/Details/51088/uu-no-6-tahun-1956
       note: null
 uji_materi: null
-reparse_error: 'v19: new text has 15 pasal, stored text 16'
+reparse_error: 'v20: new text has 15 pasal, stored text 16'
 recheck: 'missed heading in penjelasan 5; watermark 7; closing: no date of signing'

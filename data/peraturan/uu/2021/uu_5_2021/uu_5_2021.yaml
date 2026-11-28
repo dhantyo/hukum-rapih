@@ -33,18 +33,20 @@ versions:
   date_basis: tanggal_penetapan
   text: uu_5_2021_2021-10-19.txt
   pasal_count: 2
-  parser_version: 18
+  parser_version: 20
   pdf_source: peraturan.bpk.go.id
   pdf_sha256: 946836381b593fb62a2118c14f2610fbff7aadfecc628df95196e75b416cfddc
+  extra_pdf_sha256:
+  - 7953b43de091829e05ed0ef606074be05fd94a6b5b9d075d597df921ad25d21a
   ocr: true
   ocr_engine: indra
   ocr_fixed: 1
-  ocr_unknown: 10
+  ocr_unknown: 47
   checks:
-    version: 1
+    version: 2
     failed: []
-    word_coverage: 0.9725
-    ocr_unknown_rate: 0.0106
+    word_coverage: 0.9979
+    ocr_unknown_rate: 0.0039
 pdf_sha256: ad0c85f15586492df0eeb51b8933444b6a4d5a340c5c960f5d2b343280c00be6
 tanggal_pengundangan: '2021-10-19'
 tanggal_berlaku: '2021-10-19'
@@ -77,5 +79,3 @@ bpk:
     skip: []
     reason: the law first, then its Lampiran (the treaty text)
 uji_materi: null
-recheck: file order set (decision 0023)
-reparse_error: 'v19: check missed_heading worse'

@@ -34,18 +34,20 @@ versions:
   date_basis: tanggal_penetapan
   text: uu_5_2023_2023-01-13.txt
   pasal_count: 2
-  parser_version: 18
+  parser_version: 20
   pdf_source: peraturan.bpk.go.id
   pdf_sha256: 17a14e079370d3cd0936fdb43c1fda3c887bfbfc1afbce71e8ae62da4e2fbadb
+  extra_pdf_sha256:
+  - 1d3957bf4562fdf908261c6ab97ee2588f9755f8083b0b416586096e86aba64d
   ocr: true
   ocr_engine: indra
-  ocr_fixed: 6
-  ocr_unknown: 8
+  ocr_fixed: 7
+  ocr_unknown: 124
   checks:
-    version: 1
+    version: 2
     failed: []
-    word_coverage: 0.9781
-    ocr_unknown_rate: 0.0092
+    word_coverage: 0.9978
+    ocr_unknown_rate: 0.0146
 pdf_sha256: 17a14e079370d3cd0936fdb43c1fda3c887bfbfc1afbce71e8ae62da4e2fbadb
 tanggal_pengundangan: '2023-01-13'
 tanggal_berlaku: '2023-01-13'
@@ -78,5 +80,3 @@ bpk:
     skip: []
     reason: the law first, then the treaty text translation
 uji_materi: null
-recheck: file order set (decision 0023)
-reparse_error: 'v19: LeakedMarkupError: att_1__p_489: markup in text: ''ARTICLE 1'''

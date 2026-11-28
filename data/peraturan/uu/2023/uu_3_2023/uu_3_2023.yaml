@@ -34,18 +34,20 @@ versions:
   date_basis: tanggal_penetapan
   text: uu_3_2023_2023-01-03.txt
   pasal_count: 2
-  parser_version: 18
+  parser_version: 20
   pdf_source: peraturan.bpk.go.id
   pdf_sha256: 2733c14ec11dc2830e6ed3c4857e732526db7afae5432dd5308daf1ebf4271fb
+  extra_pdf_sha256:
+  - ee15e2deaf602e8b6efd33f10b7b7ab37acec279389a7ab0359946dbb0a23b3f
   ocr: true
   ocr_engine: indra
   ocr_fixed: 0
-  ocr_unknown: 7
+  ocr_unknown: 45
   checks:
-    version: 1
+    version: 2
     failed: []
-    word_coverage: 0.9816
-    ocr_unknown_rate: 0.0071
+    word_coverage: 0.9964
+    ocr_unknown_rate: 0.0089
 pdf_sha256: 2733c14ec11dc2830e6ed3c4857e732526db7afae5432dd5308daf1ebf4271fb
 tanggal_pengundangan: '2023-01-03'
 tanggal_berlaku: '2023-01-03'
@@ -78,5 +80,3 @@ bpk:
     skip: []
     reason: law first, then the official agreement text
 uji_materi: null
-recheck: file order set (decision 0023)
-reparse_error: 'v19: check missed_heading worse'

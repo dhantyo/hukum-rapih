@@ -71,4 +71,4 @@ bpk:
     reason: the law only; the second file is the Penjelasan of another law
 uji_materi: null
 recheck: file order set (decision 0023)
-reparse_error: 'v19: new text has 2884 words, stored text 4025'
+reparse_error: 'v20: new text has 2884 words, stored text 4025'

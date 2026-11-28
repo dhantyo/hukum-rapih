@@ -33,13 +33,22 @@ versions:
   date_basis: tanggal_penetapan
   text: uu_8_2014_2014-03-11.txt
   pasal_count: 2
-  parser_version: 18
+  parser_version: 20
   pdf_source: peraturan.bpk.go.id
   pdf_sha256: 01dff85dc90be48f69ccf6611a6001e0a2c38f0dcd5b408a697348ee35885ce4
+  extra_pdf_sha256:
+  - 9828ca58b12d2728aaac61c3f1bea0f2727a421c244f2ca7cf6a6e0b25a6b922
+  - de9a57ee8140e273088fc01d6d7fbcf3a6ea4bc5ca0c899b36cddbfab310d1a7
+  - fecc68d524b7ec2509717b3f19210fc86f1782f7fdd8794b612f986a8a6badb2
+  ocr: true
+  ocr_engine: indra
+  ocr_fixed: 1
+  ocr_unknown: 42
   checks:
-    version: 1
+    version: 2
     failed: []
     word_coverage: 1.0
+    ocr_unknown_rate: 0.0039
 pdf_sha256: f8d7e4bc0a2a3ae132c381063c8ba01a610cf1fec34b391130a44c8e3ca01514
 tanggal_pengundangan: '2014-03-11'
 tanggal_berlaku: '2014-03-11'
@@ -86,5 +95,3 @@ bpk:
     reason: the law first, then the treaty in Indonesian, Korean and English as BPK
       numbers them (Lampiran 1 to 3)
 uji_materi: null
-recheck: file order set (decision 0023)
-reparse_error: 'v19: check missed_heading worse'

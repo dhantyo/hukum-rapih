@@ -49,6 +49,6 @@ bpk:
     archive_url: null
   status_peraturan: null
 uji_materi: null
-reparse_error: 'v19: LeakedMarkupError: att_1__p_49: markup in text: ''PART I. GENERAL
+reparse_error: 'v20: LeakedMarkupError: att_1__p_49: markup in text: ''PART I. GENERAL
   PROVISIONS'''
 recheck: 'closing: no date of signing'

@@ -33,13 +33,15 @@ versions:
   date_basis: tanggal_penetapan
   text: uu_6_2012_2012-05-02.txt
   pasal_count: 2
-  parser_version: 18
+  parser_version: 20
   pdf_source: peraturan.bpk.go.id
   pdf_sha256: d8ffbeb75295fbef86351d70972a41fdf549ec33ce1ba15ce338e53ef41a2c4b
+  extra_pdf_sha256:
+  - 7b3324ab1630fa88d26e2762939d945c6baa2c93061293057e180306ce44aea3
   checks:
-    version: 1
+    version: 2
     failed: []
-    word_coverage: 0.9908
+    word_coverage: 0.9995
 pdf_sha256: a68865e0524219722944b88da4630d42e95b50cb4f7445e8a2faa56443637d1b
 tanggal_pengundangan: '2012-05-02'
 tanggal_berlaku: '2012-05-02'
@@ -71,5 +73,3 @@ bpk:
     skip: []
     reason: the law first, then the Convention text in Lampiran
 uji_materi: null
-recheck: file order set (decision 0023)
-reparse_error: 'v19: LeakedMarkupError: att_1__p_1896: markup in text: ''PART I'''

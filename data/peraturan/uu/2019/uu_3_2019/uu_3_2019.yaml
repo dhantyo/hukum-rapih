@@ -35,18 +35,20 @@ versions:
   date_basis: tanggal_penetapan
   text: uu_3_2019_2019-01-10.txt
   pasal_count: 2
-  parser_version: 18
+  parser_version: 20
   pdf_source: peraturan.bpk.go.id
   pdf_sha256: ae7d6e2775be73f2c21caa0540cf26d513efa289f5d47b52bbc2b348ca55e735
+  extra_pdf_sha256:
+  - b0631b5c137694004f54a40f49594ad3366354df66b7c7e3d3866b4b3f9a405a
   ocr: true
   ocr_engine: indra
-  ocr_fixed: 0
-  ocr_unknown: 2
+  ocr_fixed: 3
+  ocr_unknown: 25
   checks:
-    version: 1
+    version: 2
     failed: []
-    word_coverage: 0.9798
-    ocr_unknown_rate: 0.0018
+    word_coverage: 0.9957
+    ocr_unknown_rate: 0.0049
 pdf_sha256: 3ae9a6f2fe473949886c646a2cd01559fe13da96e819eb4e86da0135df465b49
 tanggal_pengundangan: '2019-01-10'
 tanggal_berlaku: '2019-01-10'
@@ -78,5 +80,3 @@ bpk:
     skip: []
     reason: law first, then the attached memorandum text
 uji_materi: null
-recheck: file order set (decision 0023)
-reparse_error: 'v19: LeakedMarkupError: att_1__p_381: markup in text: ''ARTICLE I'''

@@ -55,5 +55,5 @@ bpk:
       url: https://peraturan.bpk.go.id/Details/295135/uu-no-32-tahun-2024
       note: null
 uji_materi: null
-reparse_error: 'v19: new text has 43 pasal, stored text 45'
+reparse_error: 'v20: new text has 43 pasal, stored text 45'
 recheck: 'watermark 14; closing: no date of signing'

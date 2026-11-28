@@ -86,5 +86,5 @@ bpk:
   status_peraturan: null
   tanggal_pengundangan: '2017-11-22'
 uji_materi: null
-reparse_error: 'v19: new Penjelasan has 197 words, stored 2058'
+reparse_error: 'v20: new Penjelasan has 197 words, stored 2058'
 recheck: 'missed heading in body 8; page no. 3; closing: no date of signing'

@@ -78,5 +78,5 @@ bpk:
       url: https://peraturan.bpk.go.id/Details/46609/uu-no-15-tahun-1992
       note: null
 uji_materi: null
-reparse_error: 'v19: new text has 465 pasal, stored text 466'
+reparse_error: 'v20: new text has 465 pasal, stored text 466'
 recheck: 'page-turn 13; watermark 155; closing: no date of signing'

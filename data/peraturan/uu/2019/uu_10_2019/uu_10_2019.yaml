@@ -33,18 +33,20 @@ versions:
   date_basis: tanggal_penetapan
   text: uu_10_2019_2019-08-01.txt
   pasal_count: 2
-  parser_version: 18
+  parser_version: 20
   pdf_source: peraturan.bpk.go.id
   pdf_sha256: c6dd1766ad624fb3c5d21ac05ef4da853deded012e2ddec17aae42aabc977201
+  extra_pdf_sha256:
+  - feeef7a2c333a849186c5bb9410dda03a2f790eae1d792f8f5c54f39c0839588
   ocr: true
   ocr_engine: indra
-  ocr_fixed: 5
-  ocr_unknown: 14
+  ocr_fixed: 10
+  ocr_unknown: 76
   checks:
-    version: 1
+    version: 2
     failed: []
-    word_coverage: 0.9809
-    ocr_unknown_rate: 0.0157
+    word_coverage: 0.9986
+    ocr_unknown_rate: 0.0059
 pdf_sha256: 84a6feeffae34afb3552362917e62a9e6a88ceff38836c4ae59f92972b815308
 tanggal_pengundangan: '2019-08-01'
 tanggal_berlaku: '2019-08-01'
@@ -76,5 +78,3 @@ bpk:
     skip: []
     reason: the law with its Penjelasan, then the treaty text as Lampiran
 uji_materi: null
-recheck: file order set (decision 0023)
-reparse_error: 'v19: LeakedMarkupError: att_1__p_978: markup in text: ''ARTICLE 1'''

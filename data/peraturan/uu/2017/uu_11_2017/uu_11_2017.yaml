@@ -29,18 +29,21 @@ versions:
   date_basis: tanggal_penetapan
   text: uu_11_2017_2017-09-20.txt
   pasal_count: 2
-  parser_version: 18
+  parser_version: 20
   pdf_source: peraturan.bpk.go.id
   pdf_sha256: 8fc07b7da2f514e622911661bfb18ffe5f2e7b9c602b00dca89439168db9df0a
+  extra_pdf_sha256:
+  - c714f737b92b6290186f2591d45f780a508203c079c7c92b12fcb9121f0cc09a
+  - 11f8edbfc8af6add653b84fa398db6d5f8878d0ce67ab0aafe88d5ae1b417b91
   ocr: true
   ocr_engine: indra
-  ocr_fixed: 0
-  ocr_unknown: 34
+  ocr_fixed: 1
+  ocr_unknown: 127
   checks:
-    version: 1
+    version: 2
     failed: []
-    word_coverage: 0.9885
-    ocr_unknown_rate: 0.0171
+    word_coverage: 0.9992
+    ocr_unknown_rate: 0.0042
 pdf_sha256: 24655a2b2d001a36e7dcc5bf9a14874da57e328ea86da9d0283ea651b8ec30dd
 tanggal_pengundangan: '2017-09-20'
 tanggal_berlaku: '2017-09-20'
@@ -81,5 +84,3 @@ bpk:
     reason: the law, then the convention original and its Indonesian translation as
       printed
 uji_materi: null
-recheck: file order set (decision 0023)
-reparse_error: 'v19: LeakedMarkupError: att_1__p_204: markup in text: ''ARTICLE 4'''

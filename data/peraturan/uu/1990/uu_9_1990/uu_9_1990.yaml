@@ -53,5 +53,5 @@ bpk:
       url: https://peraturan.bpk.go.id/Details/38598/uu-no-10-tahun-2009
       note: null
 uji_materi: null
-reparse_error: 'v19: new text has 1 pasal, stored text 16'
+reparse_error: 'v20: new text has 1 pasal, stored text 16'
 recheck: 'missed heading in penjelasan 4; watermark 6; closing: no date of signing'

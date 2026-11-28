@@ -32,18 +32,20 @@ versions:
   date_basis: tanggal_penetapan
   text: uu_19_2025_2025-10-29.txt
   pasal_count: 2
-  parser_version: 18
+  parser_version: 20
   pdf_source: peraturan.bpk.go.id
   pdf_sha256: 78329f3f1b7b038c49cab02ac42bc223c568096901a315259051dae64a68d9dc
+  extra_pdf_sha256:
+  - d9763e05cd33f669cbdb64624193b68f39f8945df327eb678ee6a48cb702541e
   ocr: true
   ocr_engine: indra
-  ocr_fixed: 0
-  ocr_unknown: 8
+  ocr_fixed: 10
+  ocr_unknown: 56
   checks:
-    version: 1
+    version: 2
     failed: []
-    word_coverage: 0.9758
-    ocr_unknown_rate: 0.0102
+    word_coverage: 0.9981
+    ocr_unknown_rate: 0.0055
 pdf_sha256: 78329f3f1b7b038c49cab02ac42bc223c568096901a315259051dae64a68d9dc
 tanggal_pengundangan: '2025-10-29'
 tanggal_berlaku: '2025-10-29'
@@ -76,5 +78,3 @@ bpk:
     skip: []
     reason: the law, then the treaty text
 uji_materi: null
-recheck: file order set (decision 0023)
-reparse_error: 'v19: check missed_heading worse'

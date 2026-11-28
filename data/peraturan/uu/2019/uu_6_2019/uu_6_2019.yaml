@@ -33,18 +33,20 @@ versions:
   date_basis: tanggal_penetapan
   text: uu_6_2019_2019-03-13.txt
   pasal_count: 2
-  parser_version: 18
+  parser_version: 20
   pdf_source: peraturan.bpk.go.id
   pdf_sha256: 763360acf1ef1f4e82884ad8c703e207d0c9a1e37f77916f2171e276664386b2
+  extra_pdf_sha256:
+  - 7e40cda9da0dbf166c0aac0ad38b6e019dde13230d0428b6e4ce22286df05d56
   ocr: true
   ocr_engine: indra
   ocr_fixed: 0
-  ocr_unknown: 4
+  ocr_unknown: 50
   checks:
-    version: 1
+    version: 2
     failed: []
-    word_coverage: 0.9744
-    ocr_unknown_rate: 0.0043
+    word_coverage: 0.9971
+    ocr_unknown_rate: 0.0061
 tanggal_pengundangan: '2019-03-15'
 tanggal_berlaku: '2019-03-15'
 lembaran_negara: 'LN.2019/NO.58, TLN NO.6327, LL SETKAB : 4 HLM.'
@@ -75,5 +77,3 @@ bpk:
     skip: []
     reason: the law first, then the treaty text in Lampiran
 uji_materi: null
-recheck: file order set (decision 0023)
-reparse_error: 'v19: LeakedMarkupError: att_1__p_465: markup in text: ''ARTICLE 1'''

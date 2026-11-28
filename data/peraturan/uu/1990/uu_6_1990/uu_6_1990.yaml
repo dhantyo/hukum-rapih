@@ -48,5 +48,5 @@ bpk:
     archive_url: null
   status_peraturan: null
 uji_materi: null
-reparse_error: 'v19: new text has 16 pasal, stored text 17'
+reparse_error: 'v20: new text has 16 pasal, stored text 17'
 recheck: 'missed heading in penjelasan 2; watermark 7; closing: no date of signing'

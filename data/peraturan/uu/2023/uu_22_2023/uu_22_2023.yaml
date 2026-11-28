@@ -30,18 +30,21 @@ versions:
   date_basis: tanggal_penetapan
   text: uu_22_2023_2023-12-20.txt
   pasal_count: 2
-  parser_version: 18
+  parser_version: 20
   pdf_source: peraturan.bpk.go.id
   pdf_sha256: 72e6a04079799a2b0f68417caab281af13bddc3b974c5bcc2e22ea7a988f7ec4
+  extra_pdf_sha256:
+  - 81008072ed768f8590b671ca030842552a357151c626be720dfcee9c54618b2f
+  - c7099b14892e9e0fd4637cd6c24bee19abdddcb796498259aab6129d0e316235
   ocr: true
   ocr_engine: indra
   ocr_fixed: 0
-  ocr_unknown: 44
+  ocr_unknown: 67
   checks:
-    version: 1
+    version: 2
     failed: []
-    word_coverage: 0.9929
-    ocr_unknown_rate: 0.0183
+    word_coverage: 0.9994
+    ocr_unknown_rate: 0.0024
 pdf_sha256: 72e6a04079799a2b0f68417caab281af13bddc3b974c5bcc2e22ea7a988f7ec4
 tanggal_pengundangan: '2023-12-20'
 tanggal_berlaku: '2023-12-20'
@@ -81,5 +84,3 @@ bpk:
     reason: the law, then the Indonesian translation of the treaty, then the official
       multilingual text
 uji_materi: null
-recheck: file order set (decision 0023)
-reparse_error: 'v19: check missed_heading worse'
