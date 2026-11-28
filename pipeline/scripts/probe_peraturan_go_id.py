@@ -163,7 +163,7 @@ def main(argv: list[str]) -> int:
 
     direct = reaches(None)
     report["direct_seconds"] = direct
-    lines.append(f"Direct, no proxy: {'reached in %.1f s' % direct if direct else 'not reached'}")
+    lines.append(f"Direct, no proxy: {f'reached in {direct:.1f} s' if direct else 'not reached'}")
     if direct:
         route: list[str | None] = [None]
     else:
