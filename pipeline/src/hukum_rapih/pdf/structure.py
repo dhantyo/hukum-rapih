@@ -15,12 +15,13 @@ import re
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from enum import StrEnum
+from itertools import accumulate
 from pathlib import Path
 
 from .lines import Kind, Line, classify, normalise
 from .ocr_fix import Fixes
 
-PARSER_VERSION = 19  # 19: a treaty's ARTICLE or PART line printed in a Lampiran no longer fails the AKN leak check (2026-11-28: UU 15/2009, UU 21/2009, UU 26/2014 kept their old text). 18: in a Lampiran, only a Penjelasan heading naming the law itself opens its Penjelasan; an enacted Perppu's stays in the Lampiran (2026-11-27: UU 9/2017 had the Perppu's heading for its Penjelasan, its own lost in the Lampiran). 17: a heading after "… berbunyi sebagai berikut:" is the amended law's quoted pasal, never a skipped or misprinted number of the law's own (UU 7/2021 lost Pasal 5 and 8). 16: page header and footer of scanned pages removed by where the OCR put them, not by their (misread) text (pdf/edges.py). 15: misread words of scanned pages corrected when the spell check is confident (pdf/ocr_fix.py, decision 0013). 14: scanned pages read with Indra OCR instead of Tesseract (decision 0012; parser unchanged). 13: misprinted pasal numbers confirmed by the next heading ("Pasal 9" twice, UU 19/1948). 12: OCR letters for digits in heading numbers ("Pasal S1"), spaced marks ("Pasal 84 ,"); amending Penjelasan: Angka above Ayat (UU 11, 12, 13/2022). 11: OCR specks after a Pasal heading ("Pasal 4 :", UU 29/2024); parallel OCR (same words). 10: OCR speck before a Pasal heading ("' Pasal 8", UU 135/2024). 9: browser print headers/footers dropped; separate Penjelasan PDF read (UU 19/2003). 8: v7 dropped a Penjelasan after a copy certification (UU 2/2025): fixed;
+PARSER_VERSION = 20  # 20: a joined file (decision 0023) with no Penjelasan or Lampiran heading of its own starts a Lampiran once the law's own text has ended, and a copy certification ends with its file; "PARA PEJABAT" in a text is no longer taken for leaked markup (2026-11-28: UU 13/2014 and 17 other ratification laws had the treaty, a file of its own, as Penjelasan or closing text; UU 2/2023). 19: a treaty's ARTICLE or PART line printed in a Lampiran no longer fails the AKN leak check (2026-11-28: UU 15/2009, UU 21/2009, UU 26/2014 kept their old text). 18: in a Lampiran, only a Penjelasan heading naming the law itself opens its Penjelasan; an enacted Perppu's stays in the Lampiran (2026-11-27: UU 9/2017 had the Perppu's heading for its Penjelasan, its own lost in the Lampiran). 17: a heading after "… berbunyi sebagai berikut:" is the amended law's quoted pasal, never a skipped or misprinted number of the law's own (UU 7/2021 lost Pasal 5 and 8). 16: page header and footer of scanned pages removed by where the OCR put them, not by their (misread) text (pdf/edges.py). 15: misread words of scanned pages corrected when the spell check is confident (pdf/ocr_fix.py, decision 0013). 14: scanned pages read with Indra OCR instead of Tesseract (decision 0012; parser unchanged). 13: misprinted pasal numbers confirmed by the next heading ("Pasal 9" twice, UU 19/1948). 12: OCR letters for digits in heading numbers ("Pasal S1"), spaced marks ("Pasal 84 ,"); amending Penjelasan: Angka above Ayat (UU 11, 12, 13/2022). 11: OCR specks after a Pasal heading ("Pasal 4 :", UU 29/2024); parallel OCR (same words). 10: OCR speck before a Pasal heading ("' Pasal 8", UU 135/2024). 9: browser print headers/footers dropped; separate Penjelasan PDF read (UU 19/2003). 8: v7 dropped a Penjelasan after a copy certification (UU 2/2025): fixed;
 #                    Penjelasan of amending laws (Pasal I/II), OCR '1. UMUM'.
 #                   7: amending laws keep quoted articles in Pasal I, white (hidden)
 #                    text dropped, salinan certification left out, MEMORI PENJELASAN;
@@ -47,6 +48,9 @@ ORDINAL = {"PERTAMA": 1, "KESATU": 1, "KEDUA": 2, "KETIGA": 3, "KEEMPAT": 4, "KE
 SALINAN_MAX = 15  # lines of a copy's certification block ("Salinan sesuai dengan aslinya" …)
 NEXT_HEADING_WITHIN = 400  # lines, the heading itself included, a misprint check reads for the next Pasal (S3)
 PENJELASAN_TITLE_LINES = 6  # lines after a Penjelasan heading that may hold the law it names (S23)
+# lines at the start of a joined file that may hold its Penjelasan or Lampiran heading, after a
+# crest caption or the TLN's own header (S34; UU 2/2016's header is 6 lines)
+FILE_HEAD_LINES = 10
 # a law cited in capitals, a Perppu marked: "PENGGANTI UNDANG-UNDANG REPUBLIK INDONESIA NOMOR 1 TAHUN 2017"
 CITED_RE = re.compile(r"\b(PENGGANTI\s+)?UNDANG-\s?UNDANG\b[A-Z ]*?\b(?:NOMOR|NO\.|No\.)\s*(\d+)\s+TAHUN\s+(\d{4})")
 # the block a Penjelasan part line (Kind.PENJELASAN_PART) opens, and its text
@@ -200,6 +204,7 @@ class View:
 
     lines: Sequence[Line]
     at: int
+    starts: frozenset[int] = frozenset()    # first line of each joined file after the first (S34)
 
     @property
     def before(self) -> str:
@@ -721,6 +726,26 @@ def take_lampiran_text(ctx: Context, line: Line, view: View) -> int:
     return 1
 
 
+def file_starts(ctx: Context, line: Line, view: View) -> bool:
+    return view.at in view.starts
+
+
+def file_opens_no_part(ctx: Context, line: Line, view: View) -> bool:
+    """A joined file starts here with no Penjelasan or Lampiran heading in its first
+    FILE_HEAD_LINES lines: it is a Lampiran printed without one, such as the treaty a law
+    ratifies (S34, UU 13/2014)."""
+    head = (line, *view.ahead(FILE_HEAD_LINES - 1))
+    return file_starts(ctx, line, view) and not any(
+        Kind.PENJELASAN in ln or Kind.LAMPIRAN in ln for ln in head)
+
+
+def take_unheaded_lampiran(ctx: Context, line: Line, view: View) -> int:
+    """No heading is printed, so the Lampiran is named for its part; the file's first line is
+    read again as its text."""
+    emit(ctx, Block("lampiran", label="LAMPIRAN"))
+    return 0
+
+
 def take_salinan(ctx: Context, line: Line, view: View) -> int:
     """The copy's certification by the State Secretariat, often under a round stamp: not part of
     the law (and OCR turns the stamp into noise)."""
@@ -785,6 +810,10 @@ OPENERS = (
          State.PENJELASAN_UMUM),
     CLOSING_OPENS, LAMPIRAN_OPENS, SALINAN_OPENS,
 )
+# a joined file, once the law's own text has ended (its closing read, its Penjelasan open); in
+# the body or a Lampiran a file goes on with it (a body or a Lampiran in parts)
+FILE_OPENS_LAMPIRAN = Cell("file_opens_lampiran", ("S34",), None, file_opens_no_part, take_unheaded_lampiran,
+                           State.LAMPIRAN)
 
 
 TABLE: dict[State, tuple[Cell, ...]] = {
@@ -817,19 +846,20 @@ TABLE: dict[State, tuple[Cell, ...]] = {
         AYAT, LIST_ITEM, TEXT,
     ),
     State.CLOSING: (
-        *OPENERS,
+        FILE_OPENS_LAMPIRAN, *OPENERS,
         Cell("closing_gives_way", ("S17", "G4"), None, gives_way, read_in_part, settle),
         Cell("closing_sentence", ("S16",), None, sentence_goes_on, take_text),
         Cell("closing_line", ("S16",), None, always, take_closing_line),
     ),
     State.SALINAN: (
+        Cell("salinan_ends_at_file", ("S34",), None, file_starts, read_again, settle),
         Cell("salinan_runs_out", ("S25",), None, salinan_runs_out, take_salinan_runaway, settle),
         Cell("salinan_ends", ("S25",), None, salinan_ends, read_again, settle),
         Cell("closing_in_salinan", ("S16",), Kind.CLOSING, always, take_closing_line),
         Cell("salinan_line", ("S24",), None, always, take_salinan_line),
     ),
     State.PENJELASAN_UMUM: (
-        CLOSING_OPENS, LAMPIRAN_OPENS, SALINAN_OPENS,
+        FILE_OPENS_LAMPIRAN, CLOSING_OPENS, LAMPIRAN_OPENS, SALINAN_OPENS,
         Cell("part_numeral", ("S32",), Kind.PENJELASAN_PART, numeral_alone, skip),
         Cell("part", ("S32",), Kind.PENJELASAN_PART, always, take_part),
         P_PASAL_I, P_PASAL,
@@ -837,10 +867,10 @@ TABLE: dict[State, tuple[Cell, ...]] = {
         Cell("text_after_part", ("S22",), None, after_part_heading, take_paragraph), TEXT,
     ),
     State.PENJELASAN_PASAL: (
-        CLOSING_OPENS, LAMPIRAN_OPENS, SALINAN_OPENS, P_PASAL_I, P_PASAL, P_LABEL, TEXT,
+        FILE_OPENS_LAMPIRAN, CLOSING_OPENS, LAMPIRAN_OPENS, SALINAN_OPENS, P_PASAL_I, P_PASAL, P_LABEL, TEXT,
     ),
     State.PENJELASAN_PASAL_I: (
-        CLOSING_OPENS, LAMPIRAN_OPENS, SALINAN_OPENS, P_PASAL_I, P_LABEL, TEXT,
+        FILE_OPENS_LAMPIRAN, CLOSING_OPENS, LAMPIRAN_OPENS, SALINAN_OPENS, P_PASAL_I, P_LABEL, TEXT,
     ),
     # a Lampiran (maps, tables, schedules, a drafting guide) keeps its lines as printed
     State.LAMPIRAN: (
@@ -855,11 +885,21 @@ TABLE: dict[State, tuple[Cell, ...]] = {
 
 
 def parse_lines(lines: list[str], observe: Observer = ignore) -> Document:
-    """``observe`` hears every cell reading of every line (``Trace``); it cannot change the result."""
-    classified = [classify(text) for text in normalise(lines)]
+    """The cleaned lines of one file; ``parse_files`` reads several."""
+    return parse_files([lines], observe)
+
+
+def parse_files(files: Sequence[list[str]], observe: Observer = ignore) -> Document:
+    """The cleaned lines of each file of a law, read in order as one text (decision 0023). A
+    file boundary is a hard break: headings are normalised within their file, and the table
+    sees where each file starts (``View.starts``, S34). ``observe`` hears every cell reading of
+    every line (``Trace``); it cannot change the result."""
+    per_file = [[classify(text) for text in normalise(lines)] for lines in files]
+    classified = [line for lines in per_file for line in lines]
+    starts = frozenset(accumulate(len(lines) for lines in per_file[:-1]))
     ctx, i = Context(), 0
     while i < len(classified):
-        i += step(ctx, View(classified, i), observe)
+        i += step(ctx, View(classified, i, starts), observe)
     for b in ctx.doc.blocks:
         b.text = tidy(b.text)
         b.label = tidy(b.label)
@@ -868,17 +908,15 @@ def parse_lines(lines: list[str], observe: Observer = ignore) -> Document:
 
 def parse_pdf(pdf: Path, extra: Sequence[Path] = (), stats: dict | None = None) -> Document:
     """``extra``: further PDFs of the same law read after it, such as a Penjelasan that BPK
-    publishes as a separate file (UU 19/2003). ``stats``: filled by the page reading (OCR
-    pages, the header/footer lines cut by position, ...) and with the cleaned ``lines`` the
-    parser read, for a caller that wants to see them."""
+    publishes as a separate file (UU 19/2003) or a treaty the law ratifies (UU 13/2014).
+    ``stats``: filled by the page reading (OCR pages, the header/footer lines cut by position,
+    ...) and with the cleaned ``lines`` the parser read, for a caller that wants to see them."""
     from .extract import clean_lines, page_lines
 
     stats = stats if stats is not None else {}
-    lines = clean_lines(page_lines(pdf, stats), stats)
-    for more in extra:
-        lines += clean_lines(page_lines(more, stats), stats)
-    stats["lines"] = lines
-    doc = parse_lines(lines)
+    files = [clean_lines(page_lines(path, stats), stats) for path in (pdf, *extra)]
+    stats["lines"] = [line for lines in files for line in lines]
+    doc = parse_files(files)
     if stats.get("ocr_pages"):
         doc.warnings.append(f"ocr: {stats['ocr_pages']} scanned page(s) read with {stats.get('ocr_engine', 'tesseract')}")
     if stats.get("edge_lines"):
