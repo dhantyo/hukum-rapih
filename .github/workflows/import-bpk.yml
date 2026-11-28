@@ -7,6 +7,8 @@ name: Import from BPK
 # runs resume; once everything is in, runs only pick up new regulations.
 # Cloudflare: a stealth browser (Scrapling) clears the check, curl_cffi downloads
 # (pipeline/src/hukum_rapih/sources/bpk_session.py). No VPN needed: BPK is not geo-blocked.
+# A PDF that frenicohansen/idn-dharmasastra-archive has on archive.org comes from there when its
+# sha256 matches, without Cloudflare (decision 0029).
 on:
   # schedule paused 2026-11-21: parser fixes first. To resume, restore:
   # schedule:
