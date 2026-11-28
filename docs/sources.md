@@ -16,6 +16,20 @@ What we know about each site we read, and from where it answers. Dated, newest f
 - BPK has an Android app (`id.go.bpk.jdih.pro`) that may use an API. The APK was never obtained (APKPure blocked from runners, Google Play needs a login).
 - A formal KIP request to BPK's PPID is the other route to the files.
 
+## archive.org copies of BPK's PDFs: `frenicohansen/idn-dharmasastra-archive`
+
+- A GitHub repository (CC0) whose workflow downloads BPK's PDFs, uploads each to archive.org
+  (one item per type and year, `peraturan-indonesia-<jenis>-<tahun>`) and commits one mapping
+  per PDF, `data/mapping/<jenis>/<id>.yaml`: `bpk_url`, `bpk_filename`, `archive_url`, `sha256`
+  and `bytes` of BPK's file, `uploaded_at`, `verified_at`.
+- 2026-11-28: UU and Perppu only. 1,830 of our 2,054 UU files and 64 of our 170 Perppu files
+  are in it by sha256; 2,096 of its 2,115 mappings carry `verified_at`. By BPK's URL it maps
+  2,052 UU and 66 Perppu files; for the other 222 UU and 2 Perppu files its sha256 is not the one
+  we recorded (why was not checked), so the importer takes those from BPK.
+- The importer tries a listed copy before BPK and keeps it only when its sha256 is the
+  mapping's (decision 0029, `sources/dharmasastra.py`). It reads the repository as one tarball
+  from `codeload.github.com`, with no API token.
+
 ## Hugging Face mirror `Azzindani/ID_REG`
 
 - Apache-2.0. About 267,000 regulation PDFs scraped from peraturan.bpk.go.id around April 2025, in zips of about 1,000 PDFs, named with BPK's file names (spaces as `_`).

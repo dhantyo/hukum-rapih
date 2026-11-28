@@ -386,8 +386,14 @@ MIRROR = "https://huggingface.co/datasets/Azzindani/ID_REG/resolve/main/"
 
 
 def download(session, f: dict, data_dir: Path) -> tuple[bytes, str | None]:
-    """A BPK file's bytes: from BPK, or when that fails, the file of the same name in the
-    Hugging Face mirror of BPK (data/sources/mirrors/id_reg.json). Returns (bytes, note)."""
+    """A BPK file's bytes: its archive.org copy when the dharmasastra archive lists one with the
+    right sha256 (decision 0029), else from BPK, or when that fails, the file of the same name in
+    the Hugging Face mirror of BPK (data/sources/mirrors/id_reg.json). Returns (bytes, note);
+    the note names the mirror, None for BPK."""
+    from . import dharmasastra
+
+    if got := dharmasastra.fetch(f):
+        return got
     try:
         r = session.get(f["url"])
         if r.content[:5].startswith(b"%PDF"):

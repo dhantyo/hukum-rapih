@@ -5,6 +5,7 @@ import pytest
 from recfactory import make_record, make_version
 
 from hukum_rapih.sources import peraturan_bpk as bpk
+from hukum_rapih.sources.dharmasastra import copies as read_copies   # before conftest replaces it
 
 FIX = Path(__file__).parent / "fixtures" / "bpk"
 
@@ -259,6 +260,117 @@ def test_mirror_fallback_when_bpk_fails(tmp_path, monkeypatch):
     assert content.startswith(b"%PDF") and "mirror" in note and "giving up" in note
     with pytest.raises(RuntimeError, match="not in the mirror either"):
         bpk.download(Broken(), {"url": "u", "filename": "UU Nomor 99 Tahun 2026.pdf"}, tmp_path)
+
+
+# ---- the archive.org copies listed by the dharmasastra archive (decision 0029) ----------------
+
+BPK_FILE = {"url": "https://peraturan.bpk.go.id/Download/1/UU%20Nomor%205%20Tahun%202026%20%28salinan%29.pdf",
+            "bpk_file_id": 1, "filename": "UU Nomor 5 Tahun 2026 (salinan).pdf"}
+COPY = "https://archive.org/download/peraturan-indonesia-uu-2026/uu_5_2026.pdf"
+
+
+def mappings(*maps: dict) -> bytes:
+    """A tarball of the archive's repository holding these mapping files."""
+    import io
+    import tarfile
+
+    import yaml
+
+    buf = io.BytesIO()
+    with tarfile.open(fileobj=buf, mode="w:gz") as tar:
+        for n, m in enumerate(maps):
+            data = yaml.safe_dump(m).encode()
+            info = tarfile.TarInfo(f"idn-dharmasastra-archive-main/data/mapping/uu/m{n}.yaml")
+            info.size = len(data)
+            tar.addfile(info, io.BytesIO(data))
+    return buf.getvalue()
+
+
+def archive(monkeypatch, served: bytes, sha256: str, bpk_url: str) -> list[str]:
+    """The archive maps ``bpk_url`` to COPY with ``sha256``; archive.org serves ``served``.
+    Returns the URLs fetched from archive.org."""
+    import httpx
+
+    from hukum_rapih.sources import dharmasastra
+
+    listed = dharmasastra.read_mappings(mappings(
+        {"bpk_url": bpk_url, "archive_url": COPY, "sha256": sha256},
+        {"bpk_url": "https://peraturan.bpk.go.id/Download/2/x.pdf", "archive_url": COPY}))   # upload running
+    monkeypatch.setattr(dharmasastra, "copies", lambda: listed)
+    fetched = []
+
+    def get(url, **_):
+        fetched.append(url)
+        return httpx.Response(200, content=served, request=httpx.Request("GET", url))
+
+    monkeypatch.setattr(dharmasastra.httpx, "get", get)
+    return fetched
+
+
+def test_archive_copy_is_used_when_its_hash_is_the_mappings(tmp_path, monkeypatch):
+    pdf = small_pdf()
+    # BPK's link and the mapping's spell the URL differently; decoded they are the same
+    archive(monkeypatch, pdf, hashlib.sha256(pdf).hexdigest(),
+            "https://peraturan.bpk.go.id/Download/1/UU Nomor 5 Tahun 2026 (salinan).pdf")
+    s = FakeSession("details_uu_5_2026.html", b"%PDF other bytes")
+    content, note = bpk.download(s, BPK_FILE, tmp_path)
+    assert content == pdf and COPY in note and "idn-dharmasastra-archive" in note
+    assert s.calls == []                                     # BPK not asked
+
+
+def test_bpk_is_used_when_the_archive_copy_is_other_bytes(tmp_path, monkeypatch):
+    pdf = small_pdf()
+    archive(monkeypatch, b"%PDF damaged copy", hashlib.sha256(pdf).hexdigest(), BPK_FILE["url"])
+    s = FakeSession("details_uu_5_2026.html", pdf)
+    assert bpk.download(s, BPK_FILE, tmp_path) == (pdf, None)
+    assert s.calls == [BPK_FILE["url"]]
+
+
+def test_bpk_is_used_when_the_mapping_is_not_the_file_recorded(tmp_path, monkeypatch):
+    pdf = small_pdf()
+    fetched = archive(monkeypatch, pdf, hashlib.sha256(pdf).hexdigest(), BPK_FILE["url"])
+    s = FakeSession("details_uu_5_2026.html", pdf)
+    assert bpk.download(s, {**BPK_FILE, "sha256": "0" * 64}, tmp_path) == (pdf, None)
+    assert fetched == [] and s.calls == [BPK_FILE["url"]]
+
+
+def test_bpk_is_used_for_a_file_the_archive_does_not_list(tmp_path, monkeypatch):
+    pdf = small_pdf()
+    fetched = archive(monkeypatch, pdf, hashlib.sha256(pdf).hexdigest(),
+                      "https://peraturan.bpk.go.id/Download/9/UU%20Nomor%209%20Tahun%202026.pdf")
+    s = FakeSession("details_uu_5_2026.html", pdf)
+    assert bpk.download(s, BPK_FILE, tmp_path) == (pdf, None)
+    assert fetched == []
+
+
+def test_hugging_face_comes_last(tmp_path, monkeypatch):
+    pdf = small_pdf()
+    archive(monkeypatch, b"%PDF damaged copy", hashlib.sha256(pdf).hexdigest(), BPK_FILE["url"])
+    monkeypatch.setattr(bpk, "from_mirror", lambda name, d: (pdf, f"Azzindani/ID_REG z.zip/{name}"))
+
+    class Broken:
+        def get(self, url):
+            raise RuntimeError("giving up")
+
+    content, note = bpk.download(Broken(), BPK_FILE, tmp_path)
+    assert content == pdf and "Azzindani/ID_REG" in note
+
+
+def test_import_runs_as_before_when_the_mappings_cannot_be_read(tmp_path, monkeypatch):
+    import httpx
+
+    from hukum_rapih.sources import dharmasastra
+
+    def down(url, **_):
+        raise httpx.ConnectError("github.com did not answer")
+
+    read_copies.cache_clear()
+    monkeypatch.setattr(dharmasastra, "copies", read_copies)
+    monkeypatch.setattr(dharmasastra.httpx, "get", down)
+    pdf = small_pdf()
+    s = FakeSession("details_uu_5_2026.html", pdf)
+    assert bpk.download(s, BPK_FILE, tmp_path) == (pdf, None)
+    read_copies.cache_clear()
 
 
 def test_never_replaced_by_a_text_that_lost_its_penjelasan(tmp_path):
