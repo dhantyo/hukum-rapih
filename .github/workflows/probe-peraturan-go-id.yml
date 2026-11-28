@@ -1,8 +1,10 @@
 name: Probe peraturan.go.id
 
-# Read-only: checks which free Indonesian proxies reach peraturan.go.id (it answers Indonesian
-# IPs only, docs/sources.md), how complete its listing is against our records, and whether its
-# PDFs carry a text layer (pipeline/scripts/probe_peraturan_go_id.py). Nothing is committed.
+# Read-only: checks whether peraturan.go.id answers GitHub's runners directly, else which free
+# Indonesian proxies reach it (it answers Indonesian IPs only, docs/sources.md); how complete its
+# listing is against our records; and whether its PDFs carry a text layer
+# (pipeline/scripts/probe_peraturan_go_id.py). The report is rewritten after every stage and
+# published even when a stage runs out of time. Nothing is committed.
 on:
   workflow_dispatch:
     inputs:
@@ -16,7 +18,7 @@ permissions:
 jobs:
   probe:
     runs-on: ubuntu-24.04
-    timeout-minutes: 120
+    timeout-minutes: 100
     defaults:
       run:
         working-directory: pipeline
@@ -25,12 +27,16 @@ jobs:
       - uses: astral-sh/setup-uv@v7
       - run: uv sync
       - name: Probe
+        timeout-minutes: 85
         env:
           SAMPLE: ${{ inputs.sample }}
-        run: |
-          uv run --with socksio python scripts/probe_peraturan_go_id.py --sample "$SAMPLE" --out "$RUNNER_TEMP/probe" || true
-          cat "$RUNNER_TEMP/probe/report.md" >> "$GITHUB_STEP_SUMMARY"
+        run: uv run --with socksio python scripts/probe_peraturan_go_id.py --sample "$SAMPLE" --out "$RUNNER_TEMP/probe"
+      - name: Report
+        if: always()
+        run: cat "$RUNNER_TEMP/probe/report.md" >> "$GITHUB_STEP_SUMMARY" || echo "No report written." >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: probe-peraturan-go-id
           path: ${{ runner.temp }}/probe
+          if-no-files-found: ignore
